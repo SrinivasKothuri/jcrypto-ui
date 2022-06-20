@@ -1,0 +1,14 @@
+{
+  "pki":{
+    "CREATE_KEY_PAIR": [
+      {"id": "key_size", "name": "keySize", "label": "Key Size", "type": "INTEGER"},
+      {"id": "algorithm", "name": "algorithm", "label": "Algorithm", "type": "STRING"},
+      {"id": "provider", "name": "provider", "label": "Provider", "type": "STRING"},
+      {"id": "src_dir", "name": "sourceDir", "label": "Source Directory", "type": "STRING"},
+      {"id": "public_key_file_name", "name": "publicKeyFileName", "label": "Filename", "type": "STRING"},
+      {"id": "private_key_file_name", "name": "privateKeyFileName", "label": "Filename", "type": "STRING"},
+      {"id": "public_key_storage_type", "name": "publicStorageType", "label": "Format", "type": "STRING"},
+      {"id": "private_key_storage_type", "name": "privateStorageType", "label": "Format", "type": "STRING"}
+    ]
+  }
+}
