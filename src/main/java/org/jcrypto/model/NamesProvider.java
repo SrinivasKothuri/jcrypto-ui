@@ -1,5 +1,6 @@
 package org.jcrypto.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -10,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 public class NamesProvider {
 
@@ -30,5 +32,9 @@ public class NamesProvider {
 
 	private static InputStream source() throws FileNotFoundException {
 		return new FileInputStream(new File(System.getProperty("user.dir"), "names.json"));
+	}
+
+	public static Map<String, String> parseInputs(String jsonPayload) throws JsonProcessingException {
+		return MAPPER.readValue(jsonPayload, Map.class);
 	}
 }

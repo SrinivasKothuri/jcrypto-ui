@@ -4,8 +4,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jcrypto.model.NamesProvider;
+import org.jcrypto.operation.OperationFactory;
 
 import java.io.IOException;
+import java.util.Map;
 
 public class JCryptoServlet extends HttpServlet {
 
@@ -16,6 +19,16 @@ public class JCryptoServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp);
+        try {
+            String opId = req.getParameter("op_id");
+            String payload = req.getParameter("payload");
+            Map<String, String> stringStringMap = NamesProvider.parseInputs(payload);
+            Object result = OperationFactory.prepareOperation(opId, stringStringMap).process();
+            resp.getWriter().write(result.toString());
+        }
+        catch (Exception ex) {
+            resp.setStatus(500);
+            resp.getWriter().write(ex.getMessage());
+        }
     }
 }

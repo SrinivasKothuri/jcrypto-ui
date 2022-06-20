@@ -15,4 +15,8 @@ public enum Bootstrap {
     public void stop() throws Exception {
         server.stop();
     }
+
+    public static void main(String[] args) throws Exception {
+        INSTANCE.start();
+    }
 }

@@ -6,6 +6,7 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.jcrypto.operation.OperationFactory;
 
 public class Server {
 
@@ -29,6 +30,8 @@ public class Server {
         HandlerList handlers = new HandlerList();
         handlers.setHandlers(new Handler[] { resourceHandler, context });
         server.setHandler(handlers);
+
+        OperationFactory.init();
     }
 
     public void setPort(int port) {

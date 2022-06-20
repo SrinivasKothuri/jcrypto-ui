@@ -68,15 +68,19 @@ public class CreateKeyPair implements Operation {
 		KeyPairCreator keyPairCreator = builder.build();
 		KeyPair keyPair = keyPairCreator.create();
 
+		byte[] content = keyPair.getPublic().getEncoded();
+
 		if (publicStorageType == JCryptoUtil.KeyFormat.PEM)
-			JCryptoUtil.storePEMKey(this.sourceDir, this.publicKeyFileName, keyPair.getPublic().getEncoded());
+			JCryptoUtil.storePEMKey(sourceDir, publicKeyFileName, content);
 		else
-			JCryptoUtil.storeDERKey(this.sourceDir, this.publicKeyFileName, keyPair.getPublic().getEncoded());
+			JCryptoUtil.storeDERKey(sourceDir, publicKeyFileName, content);
+
+		content = keyPair.getPrivate().getEncoded();
 
 		if (privateStorageType == JCryptoUtil.KeyFormat.PEM)
-			JCryptoUtil.storePEMKey(this.sourceDir, this.privateKeyFileName, keyPair.getPrivate().getEncoded());
+			JCryptoUtil.storePEMKey(sourceDir, privateKeyFileName, content);
 		else
-			JCryptoUtil.storeDERKey(this.sourceDir, this.privateKeyFileName, keyPair.getPrivate().getEncoded());
+			JCryptoUtil.storeDERKey(sourceDir, privateKeyFileName, content);
 
 		return "";
 	}
