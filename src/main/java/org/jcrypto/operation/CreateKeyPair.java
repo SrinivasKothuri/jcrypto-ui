@@ -1,10 +1,15 @@
 package org.jcrypto.operation;
 
+import com.google.common.collect.ImmutableMap;
 import org.jcrypto.annotation.Op;
+import org.jcrypto.model.Response;
 import org.jcrypto.pki.KeyPairCreator;
 import org.jcrypto.util.JCryptoUtil;
 
+import java.io.IOException;
 import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 
 @Op(id="pki.CREATE_KEY_PAIR")
@@ -14,6 +19,7 @@ public class CreateKeyPair implements Operation {
 	private String algorithm;
 	private String provider;
 	private SecureRandom secureRandom;
+	private boolean store;
 	private String sourceDir;
 	private String publicKeyFileName;
 	private String privateKeyFileName;
@@ -24,8 +30,6 @@ public class CreateKeyPair implements Operation {
 	public CreateKeyPair() {
 		builder = new KeyPairCreator.Builder();
 	}
-
-	;
 
 	public void setKeySize(int keySize) {
 		builder.withKeySize(keySize);
@@ -64,24 +68,30 @@ public class CreateKeyPair implements Operation {
 	}
 
 	@Override
-	public Object process() throws Exception {
+	public Response process() {
 		KeyPairCreator keyPairCreator = builder.build();
-		KeyPair keyPair = keyPairCreator.create();
+		KeyPair keyPair = null;
+		try {
+			keyPair = keyPairCreator.create();
+		} catch (NoSuchAlgorithmException e) {
+			return Response.errorResponse(e);
+		} catch (NoSuchProviderException e) {
+			return Response.errorResponse(e);
+		}
 
-		byte[] content = keyPair.getPublic().getEncoded();
+		if (!store)
+			return Response.successResponse(ImmutableMap.of(
+					"private_key", JCryptoUtil.makePrivatePEM(keyPair.getPrivate().getEncoded()),
+					"public_key", JCryptoUtil.makePublicPEM(keyPair.getPublic().getEncoded())));
+		try {
+			byte[] content = keyPair.getPublic().getEncoded();
+			JCryptoUtil.storePublicKey(publicStorageType, sourceDir, publicKeyFileName, content);
 
-		if (publicStorageType == JCryptoUtil.KeyFormat.PEM)
-			JCryptoUtil.storePEMKey(sourceDir, publicKeyFileName, content);
-		else
-			JCryptoUtil.storeDERKey(sourceDir, publicKeyFileName, content);
-
-		content = keyPair.getPrivate().getEncoded();
-
-		if (privateStorageType == JCryptoUtil.KeyFormat.PEM)
-			JCryptoUtil.storePEMKey(sourceDir, privateKeyFileName, content);
-		else
-			JCryptoUtil.storeDERKey(sourceDir, privateKeyFileName, content);
-
-		return "";
+			content = keyPair.getPrivate().getEncoded();
+			JCryptoUtil.storePrivateKey(privateStorageType, sourceDir, privateKeyFileName, content);
+		} catch (IOException e) {
+			return Response.errorResponse(e);
+		}
+		return Response.successResponse(ImmutableMap.of());
 	}
 }

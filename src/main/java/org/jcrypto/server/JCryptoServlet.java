@@ -4,7 +4,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jcrypto.JCryptoServiceUtil;
 import org.jcrypto.model.NamesProvider;
+import org.jcrypto.model.Response;
 import org.jcrypto.operation.OperationFactory;
 
 import java.io.IOException;
@@ -24,11 +26,13 @@ public class JCryptoServlet extends HttpServlet {
             String payload = req.getParameter("payload");
             Map<String, String> stringStringMap = NamesProvider.parseInputs(payload);
             Object result = OperationFactory.prepareOperation(opId, stringStringMap).process();
-            resp.getWriter().write(result.toString());
+            String responsePayload = JCryptoServiceUtil.serialize(result);
+            resp.getWriter().write(responsePayload);
         }
         catch (Exception ex) {
             resp.setStatus(500);
-            resp.getWriter().write(ex.getMessage());
+            String errorPayload = JCryptoServiceUtil.serialize(Response.errorResponse(ex));
+            resp.getWriter().write(errorPayload);
         }
     }
 }

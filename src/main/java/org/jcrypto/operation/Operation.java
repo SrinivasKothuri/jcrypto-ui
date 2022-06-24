@@ -1,5 +1,7 @@
 package org.jcrypto.operation;
 
+import org.jcrypto.model.Response;
+
 public interface Operation {
-	Object process() throws Exception;
+	Response process() throws Exception;
 }
